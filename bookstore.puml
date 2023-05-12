@@ -1,0 +1,81 @@
+@startuml bookstore
+
+Actor Admin
+Actor User
+participant UI
+participant Cart
+participant Shelves
+participant Order
+participant Payment
+participant Gateway
+Database Database
+
+=== Browse ==
+User -> UI : VIEW / books
+UI -> Shelves : VIEW / books 
+Shelves -> UI : 200 OK
+UI -> User : Display Result
+
+=== Login ==
+User -> UI : POST / username & password
+UI -> Database : POST / username & password
+Database ->  UI : 200 OK
+UI -> User : Display Result
+
+=== Add to Cart ==
+User -> UI : POST / cart / book
+UI -> Cart : POST / cart / book:id
+Cart -> Shelves : GET / book:id
+Shelves -> Cart : 200 OK
+Cart -> Database : 201 Created
+Cart -> UI : 201 Created
+UI -> User : Display Result
+
+=== Purchase ==
+User -> UI : POST / checkout
+UI -> Cart : POST / checkout:id
+Cart -> Payment : POST / checkout:id
+Payment -> UI : GET / payment
+UI -> Payment : POST / payment
+Payment -> Gateway : POST / payment:id
+Gateway -> Payment : 200 OK
+Payment -> Gateway : PUT / payment:id
+Gateway -> Payment : 204 No Content
+Payment -> Database : 201 Created
+Payment -> UI : 201 Created
+UI -> User : Display Result
+
+=== Add Book ==
+Admin -> UI : POST / book
+UI -> Shelves : POST / book:id
+Shelves -> Database : POST / book:id
+Database -> Shelves : 201 Created
+Shelves -> UI : 201 Created
+UI -> Admin : Display Result
+
+=== Remove Book ==
+Admin -> UI : DELETE / book
+UI -> Shelves : DELETE / book:id
+Shelves -> Database : DELETE / book:id
+Database -> Shelves : 204 No Content
+Shelves -> UI : 204 No Content
+UI -> Admin : Display Result
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@enduml
